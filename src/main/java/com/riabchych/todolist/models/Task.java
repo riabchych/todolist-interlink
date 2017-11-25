@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "tasks")
 @JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, allowGetters = true)
 public class Task implements Serializable {
@@ -36,16 +38,16 @@ public class Task implements Serializable {
 
     @Column()
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDate createdAt;
+    @Temporal(TemporalType.DATE)
+    private Date createdAt;
 
     @Column()
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDate updatedAt;
+    @Temporal(TemporalType.DATE)
+    private Date updatedAt;
 
     @Column(nullable = true, updatable = true)
-    private LocalDate deadline;
+    private Date deadline;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isCompleted;
@@ -53,13 +55,13 @@ public class Task implements Serializable {
     public Task() {
         this.title = "";
         this.description = "";
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
-        this.deadline = LocalDate.now();
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+        this.deadline = new Date();
         this.isCompleted = false;
     }
 
-    public Task(String title, String description, LocalDate createdAt, LocalDate updatedAt, LocalDate deadline, boolean isCompleted) {
+    public Task(String title, String description, Date createdAt, Date updatedAt, Date deadline, boolean isCompleted) {
         this.title = title;
         this.description = description;
         this.createdAt = createdAt;
@@ -108,27 +110,27 @@ public class Task implements Serializable {
         this.status = status;
     }
 
-    public LocalDate getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDate getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDate updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public LocalDate getDeadline() {
+    public Date getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(LocalDate deadline) {
+    public void setDeadline(Date deadline) {
         this.deadline = deadline;
     }
 
