@@ -9,17 +9,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
 @RequestMapping("/v1/")
 public class TaskController {
 
-    private TaskService taskService;
+    private final TaskService taskService;
 
     @Autowired
     public TaskController(TaskService taskService) {
-
         this.taskService = taskService;
     }
 
@@ -51,8 +51,10 @@ public class TaskController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public Task create(@RequestBody Task Task) {
-        return taskService.createTask(Task);
+    public ResponseEntity<Task> create(@Valid @RequestBody Task task) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Accept-Patch", "application/json-patch+json");
+        return new ResponseEntity<>(taskService.createTask(task), headers, HttpStatus.OK);
     }
 
     @RequestMapping(
