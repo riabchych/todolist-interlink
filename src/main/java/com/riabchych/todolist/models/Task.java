@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "tasks")
@@ -22,40 +21,46 @@ public class Task implements Serializable {
 
     @Column()
     @NotBlank
-    private String content;
+    private String title;
 
     @Column()
-    @NotBlank
     private String description;
+
+    @Column()
+    @Enumerated(EnumType.STRING)
+    private Priority priority;
+
+    @Column()
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Column()
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @CreatedDate
-    private Date createdAt;
+    private LocalDate createdAt;
 
     @Column()
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    private LocalDate updatedAt;
 
     @Column(nullable = true, updatable = true)
-    private Date deadline;
+    private LocalDate deadline;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isCompleted;
 
     public Task() {
-        this.content = "";
+        this.title = "";
         this.description = "";
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
-        this.deadline = new Date();
+        this.createdAt = LocalDate.now();
+        this.updatedAt = LocalDate.now();
+        this.deadline = LocalDate.now();
         this.isCompleted = false;
     }
 
-    public Task(String content, String description, Date createdAt, Date updatedAt, Date deadline, boolean isCompleted) {
-        this.content = content;
+    public Task(String title, String description, LocalDate createdAt, LocalDate updatedAt, LocalDate deadline, boolean isCompleted) {
+        this.title = title;
         this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -71,12 +76,12 @@ public class Task implements Serializable {
         this.id = id;
     }
 
-    public String getContent() {
-        return content;
+    public String getTitle() {
+        return title;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -87,27 +92,43 @@ public class Task implements Serializable {
         this.description = description;
     }
 
-    public Date getCreatedAt() {
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public LocalDate getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(LocalDate updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public Date getDeadline() {
+    public LocalDate getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
     }
 
@@ -123,8 +144,8 @@ public class Task implements Serializable {
     public String toString() {
         return "Task {" +
                 "id=" + id +
+                ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", content='" + content + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", isCompleted=" + isCompleted +
