@@ -29,12 +29,10 @@ public class Task implements Serializable {
     private String description;
 
     @Column()
-    @Enumerated(EnumType.STRING)
-    private Priority priority;
+    private int priority;
 
     @Column()
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    private int status;
 
     @Column()
     @CreationTimestamp
@@ -51,6 +49,9 @@ public class Task implements Serializable {
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isCompleted;
+
+    @ManyToOne
+    private TaskList taskList;
 
     public Task() {
         this.title = "";
@@ -94,20 +95,20 @@ public class Task implements Serializable {
         this.description = description;
     }
 
-    public Priority getPriority() {
+    public int getPriority() {
         return priority;
     }
 
     public void setPriority(Priority priority) {
-        this.priority = priority;
+        this.priority = priority.getValue();
     }
 
-    public Status getStatus() {
+    public int getStatus() {
         return status;
     }
 
     public void setStatus(Status status) {
-        this.status = status;
+        this.status = status.getValue();
     }
 
     public Date getCreatedAt() {
@@ -142,15 +143,11 @@ public class Task implements Serializable {
         isCompleted = completed;
     }
 
-    @Override
-    public String toString() {
-        return "Task {" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", isCompleted=" + isCompleted +
-                '}';
+    public TaskList getTaskList() {
+        return taskList;
+    }
+
+    public void setTaskList(TaskList taskList) {
+        this.taskList = taskList;
     }
 }
