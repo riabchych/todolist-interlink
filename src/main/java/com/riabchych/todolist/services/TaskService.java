@@ -1,21 +1,20 @@
 package com.riabchych.todolist.services;
 
+import com.riabchych.todolist.models.Priority;
+import com.riabchych.todolist.models.Status;
 import com.riabchych.todolist.models.Task;
 import com.riabchych.todolist.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-public class TaskService implements DaoCRUD, TaskQueries {
+import java.util.Date;
 
-    //To do
-    private final TaskRepository taskRepository;
+@Service
+public class TaskService implements TaskCRUD, TaskQueries {
 
     @Autowired
-    public TaskService(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
-    }
+    private TaskRepository taskRepository;
 
     // CRUD
     @Transactional
@@ -31,8 +30,9 @@ public class TaskService implements DaoCRUD, TaskQueries {
 
     @Transactional
     @Override
-    public void updateTask(Task task) {
-        taskRepository.save(task);
+    public Task updateTask(Task task) {
+        task.setUpdatedAt(new Date());
+        return taskRepository.save(task);
     }
 
     @Transactional
@@ -41,9 +41,55 @@ public class TaskService implements DaoCRUD, TaskQueries {
         taskRepository.delete(id);
     }
 
+    // Queries
     @Override
     public Iterable<Task> getAllTasks() {
         return taskRepository.findAll();
+    }
+
+    @Override
+    public Iterable<Task> filterByPriority(Priority priority) {
+        return taskRepository.findTasksByPriority(priority.getValue());
+    }
+
+    @Override
+    public Iterable<Task> getAllTasksOrderByPriority() {
+        return taskRepository.findAllByOrderByPriorityAsc();
+    }
+
+    @Override
+    public Iterable<Task> getAllTasksOrderByStatus() {
+        return taskRepository.findAllByOrderByStatusAsc();
+    }
+
+    @Override
+    public Iterable<Task> filterByCompleted(boolean isCompleted) {
+        return taskRepository.findTasksByIsCompleted(isCompleted);
+    }
+
+    @Override
+    public Task changeTaskPriority(long id, Priority priority) {
+        Task t = taskRepository.findById(id);
+        if (t != null) {
+            t.setPriority(priority);
+            return taskRepository.save(t);
+        }
+        return null;
+    }
+
+    @Override
+    public Task changeTaskStatus(long id, Status status) {
+        Task t = taskRepository.findById(id);
+        if (t != null) {
+            t.setStatus(status);
+            if (Status.COMPLETED == status) {
+                t.setCompleted(true);
+            } else {
+                t.setCompleted(false);
+            }
+            return taskRepository.save(t);
+        }
+        return null;
     }
 
 }
